@@ -13,7 +13,7 @@ var addClientToRoom = function (request, roomId, clientId, isLoopback, callback)
     var messages = [];
     var occupancy = room.getOccupancy();
 
-    if (occupancy >= 5) {
+    if (occupancy >= 2) {
       error = Config.constant.RESPONSE_ROOM_FULL;
       callback(error, {
         messages: messages,
@@ -78,7 +78,7 @@ var saveMessageFromClient = function (host, roomId, clientId, message, callback)
       });
 
       return;
-    } else if (room.getOccupancy() > 5) {
+    } else if (room.getOccupancy() > 2) {
       callback(null, false);
     } else {
       var client = room.getClient(clientId);
@@ -167,7 +167,7 @@ exports.main = {
       if (room) {
         console.log('Room ' + roomId + ' has state ' + room.toString());
 
-        if (room.getOccupancy() >= 5) {
+        if (room.getOccupancy() >= 2) {
           console.log('Room ' + roomId + ' is full');
           reply.view('full_template', {});
 
