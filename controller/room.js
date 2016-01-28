@@ -6,32 +6,26 @@ var rooms = new Rooms();
 
 var addClientToRoom = function (request, roomId, clientId, isLoopback, callback) {
   var key = Common.getCacheKeyForRoom(request.headers.host, roomId);
-  var rooms = new Rooms();
 
   rooms.createIfNotExist(key, function (error, room) {
-    if (error) {
-      callback(error);
-
-      return;
-    }
-
     var error = null;
     var isInitiator = false;
     var messages = [];
-    var roomState = '';
     var occupancy = room.getOccupancy();
 
     if (occupancy >= 5) {
       error = Config.constant.RESPONSE_ROOM_FULL;
       callback(error, {
-        messages: messages
+        messages: messages,
+        room_state: room.toString()
       });
 
       return;
     } else if (room.hasClient(clientId)) {
       error = Config.constant.RESPONSE_DUPLICATE_CLIENT;
       callback(error, {
-        messages: messages
+        messages: messages,
+        room_state: room.toString()
       });
 
       return;
@@ -39,7 +33,8 @@ var addClientToRoom = function (request, roomId, clientId, isLoopback, callback)
       room.join(clientId, function (error, client, otherClient) {
         if (error) {
           callback(error, {
-            messages: messages
+            messages: messages,
+            room_state: null
           });
 
           return;
@@ -62,7 +57,68 @@ var addClientToRoom = function (request, roomId, clientId, isLoopback, callback)
       });
     }
   });
-}
+};
+
+var saveMessageFromClient = function (host, roomId, clientId, message, callback) {
+  var text = message;
+  var key = Common.getCacheKeyForRoom(host, roomId);
+
+  rooms.get(key, function (error, room) {
+    if (!room) {
+      console.warn('Unknown room: ' + roomId);
+      callback({
+        error: Config.constant.RESPONSE_UNKNOWN_ROOM
+      });
+
+      return;
+    } else if (!room.hasClient(clientId)) {
+      console.warn('Unknown client: ' + clientId);
+      callback({
+        error: Config.constant.RESPONSE_UNKNOWN_CLIENT
+      });
+
+      return;
+    } else if (room.getOccupancy() > 5) {
+      callback(null, false);
+    } else {
+      var client = room.getClient(clientId);
+      client.addMessage(text);
+      console.log('Saved message for client ' + clientId + ':' + client.toString() + ' in room ' + roomId);
+      callback(null, true);
+
+      return;
+    }
+  });
+};
+
+var sendMessageToCollider = function (request, roomId, clientId, message, callback) {
+  console.log('Forwarding message to collider from room ' + roomId + ' client ' + clientId);
+  var wssParams = Common.getWSSParameters(request);
+  var wssHost = Url.parse(wssParams.wssPostUrl);
+  var postOptions = {
+    host: wssHost.hostname,
+    port: wssHost.port,
+    path: '/' + roomId + '/' + clientId,
+    method: 'POST'
+  };
+  var postRequest = https.request(postOptions, function (result) {
+    if (result.statusCode == 200) {
+      callback(null, {
+        result: 'SUCCESS'
+      });
+
+      return;
+    } else {
+      console.error('Failed to send message to collider: ' + result.statusCode);
+      callback(result.statusCode);
+
+      return;
+    }
+  });
+
+  postRequest.write(message);
+  postRequest.end();
+};
 
 var removeClientFromRoom = function (host, roomId, clientId, callback) {
   var key = Common.getCacheKeyForRoom(host, roomId);
@@ -153,6 +209,40 @@ exports.join = {
 
       console.log('User ' + clientId + ' joined room ' + roomId);
       console.log('Room ' + roomId + ' has state ' + result.room_state);
+    });
+  }
+};
+
+exports.message = {
+  handler: function (request, reply) {
+    var roomId = request.params.roomId;
+    var clientId = request.params.clientId;
+    var message = request.body;
+
+    saveMessageFromClient(request.headers['host'], roomId, clientId, message, function (error, result) {
+      if (error) {
+        reply({
+          result: error
+        });
+
+        return;
+      }
+
+      if (result) {
+        reply({
+          result: 'SUCCESS'
+        });
+      } else {
+        sendMessageToCollider(request, roomId, clientId, message, function (error, result) {
+          if (error) {
+            reply('').code(500);
+          }
+
+          if (result) {
+            reply(result);
+          }
+        });
+      }
     });
   }
 };
