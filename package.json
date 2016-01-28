@@ -1,0 +1,21 @@
+{
+  "name": "node-apprtc",
+  "version": "0.0.1",
+  "description": "Nodejs based AppRTC server",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "webrtc",
+    "apprtc"
+  ],
+  "author": "Fitra Aditya",
+  "license": "MIT",
+  "dependencies": {
+    "handlebars": "^4.0.5",
+    "hapi": "^12.1.0",
+    "inert": "^3.2.0",
+    "vision": "^4.0.1"
+  }
+}
