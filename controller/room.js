@@ -78,7 +78,7 @@ var saveMessageFromClient = function (host, roomId, clientId, message, callback)
       });
 
       return;
-    } else if (room.getOccupancy() > 2) {
+    } else if (room.getOccupancy() > 1) {
       callback(null, false);
     } else {
       var client = room.getClient(clientId);
