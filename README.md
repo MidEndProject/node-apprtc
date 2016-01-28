@@ -19,8 +19,8 @@ $ node index.js
 Open your browser and navigate to http://localhost:4567
 
 ##To Do
-[ ] Implementing memcached or redis options
-[ ] Adding built-in websocket server
+- [ ] Implementing memcached or redis options
+- [ ] Adding built-in websocket server
 
 ## License
 MIT
