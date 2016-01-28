@@ -217,7 +217,7 @@ exports.message = {
   handler: function (request, reply) {
     var roomId = request.params.roomId;
     var clientId = request.params.clientId;
-    var message = request.body;
+    var message = request.payload;
 
     saveMessageFromClient(request.headers['host'], roomId, clientId, message, function (error, result) {
       if (error) {
