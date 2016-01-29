@@ -12,6 +12,9 @@
   ],
   "author": "Fitra Aditya",
   "license": "MIT",
+  "engines": {
+    "node": "4.2.0"
+  },
   "dependencies": {
     "handlebars": "^4.0.5",
     "hapi": "^12.1.0",
