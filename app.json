@@ -1,0 +1,7 @@
+{
+  "name": "node-apprtc",
+  "description": "Nodejs based AppRTC server",
+  "repository": "https://github.com/MidEndProject/node-apprtc",
+  "keywords": ["node", "webrtc", "apprtc"],
+  "image": "heroku/nodejs"
+}
