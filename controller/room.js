@@ -257,6 +257,7 @@ exports.leave = {
         console.log('Room ' + roomId + ' has state ' + result.room_state);
       }
 
+      console.log('Room ' + roomId + ' has state ' + result.room_state);
       reply('');
     });
   }
