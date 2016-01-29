@@ -3,8 +3,10 @@ var Querystring = require('querystring');
 var Config = require('../config');
 
 var getHdDefault = function (userAgent) {
-  if (userAgent.indexOf('Android') > -1 || userAgent.indexOf('Chrome') == -1) {
-    return false;
+  if (typeof userAgent !== 'undefined') {
+    if (userAgent.indexOf('Android') > -1 || userAgent.indexOf('Chrome') == -1) {
+      return false;
+    }
   }
 
   return true;
