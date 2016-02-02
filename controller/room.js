@@ -1,4 +1,5 @@
 var Url = require('url');
+var Https = require('https');
 var Config = require('../config');
 var Common = require('./common');
 var Rooms = require('../data/rooms');
@@ -102,7 +103,7 @@ var sendMessageToCollider = function (request, roomId, clientId, message, callba
     path: '/' + roomId + '/' + clientId,
     method: 'POST'
   };
-  var postRequest = https.request(postOptions, function (result) {
+  var postRequest = Https.request(postOptions, function (result) {
     if (result.statusCode == 200) {
       callback(null, {
         result: 'SUCCESS'
