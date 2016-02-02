@@ -242,3 +242,4 @@ exports.getCacheKeyForRoom = function (host, roomId) {
 };
 
 exports.generateRandom = generateRandom;
+exports.getWSSParameters = getWSSParameters;
