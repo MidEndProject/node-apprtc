@@ -1,3 +1,4 @@
+var Url = require('url');
 var Config = require('../config');
 var Common = require('./common');
 var Rooms = require('../data/rooms');
