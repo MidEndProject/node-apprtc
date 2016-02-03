@@ -178,7 +178,6 @@ exports.main = {
       }
 
       var params = Common.getRoomParameters(request, roomId, null, null);
-
       reply.view('index_template', params);
     });
   }
@@ -189,25 +188,27 @@ exports.join = {
     var roomId = request.params.roomId;
     var clientId = Common.generateRandom(8);
     var isLoopback = request.params.debug == 'loopback';
+    var response = null;
 
     addClientToRoom(request, roomId, clientId, isLoopback, function(error, result) {
       if (error) {
         console.error('Error adding client to room: ' + error + ', room_state=' + result.room_state);
-        reply({
+        response = {
           result: error,
           params: result
-        });
+        };
+        reply(JSON.stringify(response));
 
         return;
       }
 
       var params = Common.getRoomParameters(request, roomId, clientId, result.is_initiator);
       params.messages = result.messages;
-
-      reply({
+      response = {
         result: 'SUCCESS',
         params: params
-      });
+      };
+      reply(JSON.stringify(response));
 
       console.log('User ' + clientId + ' joined room ' + roomId);
       console.log('Room ' + roomId + ' has state ' + result.room_state);
@@ -220,20 +221,23 @@ exports.message = {
     var roomId = request.params.roomId;
     var clientId = request.params.clientId;
     var message = request.payload;
+    var response = null;
 
     saveMessageFromClient(request.headers['host'], roomId, clientId, message, function (error, result) {
       if (error) {
-        reply({
+        response = {
           result: error
-        });
+        };
+        reply(JSON.stringify(response));
 
         return;
       }
 
       if (result) {
-        reply({
+        response = {
           result: 'SUCCESS'
-        });
+        };
+        reply(JSON.stringify(response));
       } else {
         sendMessageToCollider(request, roomId, clientId, message, function (error, result) {
           if (error) {
@@ -241,7 +245,7 @@ exports.message = {
           }
 
           if (result) {
-            reply(result);
+            reply(JSON.stringify(result));
           }
         });
       }
