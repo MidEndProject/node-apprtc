@@ -1,3 +1,4 @@
+var Url = require('url');
 var Util = require('util');
 var Querystring = require('querystring');
 var Config = require('../config');
@@ -219,11 +220,15 @@ exports.getRoomParameters = function (request, roomId, clientId, isInitiator) {
     'version_info': JSON.stringify(getVersionInfo())
   };
 
-  var protocol = request.headers['x-forwarded-proto'] || 'http';
+  var protocol = request.headers['x-forwarded-proto'];
+
+  if (request.headers['origin']) {
+    protocol = protocol || Url.parse(request.headers['origin']).protocol || 'http:';
+  }
 
   if (roomId) {
     params['room_id'] = roomId;
-    params['room_link'] =  protocol + '://' + request.headers['host'] + '/r/' + roomId;
+    params['room_link'] =  protocol + '//' + request.headers['host'] + '/r/' + roomId;
   }
 
   if (clientId) {
