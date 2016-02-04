@@ -218,10 +218,23 @@ exports.join = {
 
 exports.message = {
   handler: function (request, reply) {
+    var userAgent = request.headers['user-agent'];
     var roomId = request.params.roomId;
     var clientId = request.params.clientId;
-    var message = request.payload;
+    var message = null;
     var response = null;
+
+    console.log('User ' + clientId + ' - ' + userAgent);
+    if (userAgent.indexOf('CFNetwork') > -1) {
+      var malformed_sdp = request.payload;
+      var keys = Object.keys(malformed_sdp);
+      var key = keys[0];
+      var value = malformed_sdp[key];
+      var sdp = key + '=' + value;
+      message = sdp;
+    } else {
+      message = request.payload;
+    }
 
     saveMessageFromClient(request.headers['host'], roomId, clientId, message, function (error, result) {
       if (error) {
