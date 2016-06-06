@@ -190,7 +190,7 @@ exports.getRoomParameters = function (request, roomId, clientId, isInitiator) {
   }
 
   var username = clientId ? clientId : generateRandom(9);
-  var turnUrl = turnBaseUrl.length > 0 ? Util.format(Config.constant.TURN_URL_TEMPLATE, turnBaseUrl, 'webrtc', 'webrtc') : null;
+  var turnUrl = turnBaseUrl.length > 0 ? Util.format(Config.constant.TURN_URL_TEMPLATE, turnBaseUrl) : null;
 
   var pcConfig = makePcConfig(iceTransports);
   var pcConstraints = makePcConstraints(dtls, dscp, ipv6);
