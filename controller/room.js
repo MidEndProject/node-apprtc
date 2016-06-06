@@ -1,4 +1,5 @@
 var Url = require('url');
+var Http = require('http');
 var Https = require('https');
 var Config = require('../config');
 var Common = require('./common');
@@ -232,6 +233,10 @@ exports.message = {
       var value = malformed_sdp[key];
       var sdp = key + '=' + value;
       message = sdp;
+
+      if (message.slice(-1) == '=') {
+         message = message.slice(0, -1);
+      }
     } else {
       message = request.payload;
     }
