@@ -7,7 +7,7 @@ exports.endpoints = [
   { method: 'POST', path: '/message/{roomId}/{clientId}', config: Room.message },
   { method: 'GET', path: '/r/{roomId}', config: Room.main },
   { method: 'POST', path: '/leave/{roomId}/{clientId}', config: Room.leave },
-  { method: 'GET', path: '/turn', config: Index.turn },
+  { method: 'POST', path: '/turn', config: Index.turn },
   { method: 'GET', path: '/{param*}', handler: {
       directory: {
         path: 'public',
