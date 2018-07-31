@@ -14,7 +14,7 @@ exports.turn = {
     var getOptions = {
       host: 'instant.io',
       port: 443,
-      path: '/rtcConfig',
+      path: '/__rtcConfig__',
       method: 'GET'
     };
     Https.get(getOptions, function (result) {
